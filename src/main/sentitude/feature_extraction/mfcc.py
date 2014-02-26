@@ -154,27 +154,3 @@ class mfcc:
 
     
     
-def main():
-	# open the sample audio file for testing
-	(rate,signal) = scipy.io.wavfile.read("../../audio/sample14.wav")
-	mfcc_obj = mfcc()
-	pre_emphasised = mfcc_obj.pre_emphasis(signal)
-	normalised = mfcc_obj.normalisation(pre_emphasised)
-	frames = mfcc_obj.framing(normalised,20,10)
-	windowed = mfcc_obj.windowing(frames)
-	power_spectrum = mfcc_obj.power_spectrum(windowed,512)
-	filter_banks = mfcc_obj.calculate_mel_filter_banks()
-	(feature_vectors,energy) = mfcc_obj.filter_bank_energies(filter_banks,power_spectrum)
-	logFilterBankEnergies = mfcc_obj.log_filter_bank_energies(feature_vectors)
-	# for everyRow in logFilterBankEnergies:
-	# 	print everyRow
-	cepstrals = mfcc_obj.discrete_cosine_transforms(logFilterBankEnergies,20)
-	final_cepstrals =  mfcc_obj.lifter(cepstrals)
-	print cepstrals
-	print final_cepstrals[0]
-	
-	
-	
-
-if __name__ == '__main__':
-	main()
