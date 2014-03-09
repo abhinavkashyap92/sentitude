@@ -141,6 +141,7 @@ class mfcc:
 		return feature_vectors,energy
 
 	def log_filter_bank_energies(self,filterBankEnergies):
+		np.seterr(divide='ignore')
 		return np.log10(filterBankEnergies)
 
 	def discrete_cosine_transforms(self,filterBankEnergies,numberCepstrals):
@@ -162,6 +163,7 @@ class mfcc:
 			* To calculate this duplicate the first and the last rows. Else it is not possible to calculate the delta vectors for the first and the last row
 		'''
 		#Duplicate the first and the last rows
+		np.seterr(all='ignore')
 		(number_rows, number_columns) = cepstrals.shape
 		delta_vectors = []
 		cepstrals = np.append(np.reshape(np.copy(cepstrals[0]),(1,number_columns)),cepstrals,axis=0)
