@@ -48,7 +48,7 @@ class mfcc:
 		number_of_zeroes_padded = padding_length - signal_length
 		zero_array = np.zeros(number_of_zeroes_padded)
 		padded_signal = np.concatenate((signal,zero_array))
-		
+
 		# indices for framing
 		indices = np.array(np.tile(np.arange(0,frame_length),(number_of_frames,1)) + np.transpose(np.tile(np.arange(0,number_of_frames*frame_step,frame_step),(frame_length,1))),dtype=np.int32)
 		return padded_signal[indices]
@@ -56,8 +56,8 @@ class mfcc:
 	def windowing(self,frames):
 		'''
 			* Window function is one which is zero outside a given interval
-			* Why? Fourier transform assumes periodicity. 
-			  Any discontinuity between the last sample and the repeated first sample(caused by framing) causes leakage 
+			* Why? Fourier transform assumes periodicity.
+			  Any discontinuity between the last sample and the repeated first sample(caused by framing) causes leakage
 			* To apply the window multiply signal with window function
 		'''
 		return_list = []
@@ -75,14 +75,14 @@ class mfcc:
 
 	def power_spectrum(self,frames,nfft):
 		'''
-			* Calculates the power spectrum of each frame 
+			* Calculates the power spectrum of each frame
 			* power spectrum of a signal is defined as |F'( log(|F(f(t))|^2) ) |^2
 			* This is useful for human voice analysis
 		'''
 		return 1.0/nfft * np.square(self.fast_fourier_transforms(frames,nfft))
 
 	def log_power_spectrum(self,frames,nfft,normalisation = 1):
-	
+
 	   power_spectrum_value = self.power_spectrum(frames,nfft)
 	   power_spectrum_value[power_spectrum_value<=1e-30] = 1e-30
 	   log_power_spectrum = 10*np.log10(power_spectrum_value)
@@ -95,7 +95,7 @@ class mfcc:
 		'''
 			* This is the utility function that converts the hertz to mels scale
 		'''
-		return 2595 * np.log10(1 + hertz/ 700.0) 
+		return 2595 * np.log10(1 + hertz/ 700.0)
 
 	def mel_scale_to_hertz(self,mel):
 		'''
@@ -127,7 +127,7 @@ class mfcc:
 				filter_bank[j,i] = (i - bin_numbers[j])/(bin_numbers[j+1] -bin_numbers[j])
 			for i in xrange(int(bin_numbers[j+1]),int(bin_numbers[j+2])):
 				filter_bank[j,i] = (bin_numbers[j+2] - i) /(bin_numbers[j+2] - bin_numbers[j+1])
-		
+
 		return filter_bank
 
 	def filter_bank_energies(self,filterBank,powerSpectrum):
@@ -159,7 +159,7 @@ class mfcc:
 			* The formula for calculating the delta_coefficients is dt = Cn+1 - Cn-1
 																		 -----------
 																		 	  2
-			* To calculate this duplicate the first and the last rows. Else it is not possible to calculate the delta vectors for the first and the last row																		 	  
+			* To calculate this duplicate the first and the last rows. Else it is not possible to calculate the delta vectors for the first and the last row
 		'''
 		#Duplicate the first and the last rows
 		(number_rows, number_columns) = cepstrals.shape
@@ -170,7 +170,7 @@ class mfcc:
 			delta_vectors.append(np.subtract(cepstrals[i+thetha],cepstrals[i-thetha]) /2)
 
 		return np.array(delta_vectors)
-		
 
-    
-    
+
+
+

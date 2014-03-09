@@ -1,4 +1,4 @@
-import mfcc 
+import mfcc
 import scipy.io.wavfile
 import numpy
 
@@ -19,7 +19,7 @@ class FeatureExtractor:
 		return self.audio
 
 	def calculate_mfcc(self):
-		(self.rate,self.signal) = scipy.io.wavfile.read(self.audio) 
+		(self.rate,self.signal) = scipy.io.wavfile.read(self.audio)
 		preEmphasizedSignal = self.mfcc.pre_emphasis(self.signal)
 		normalizedSignal = self.mfcc.normalisation(preEmphasizedSignal)
 		framedSignal = self.mfcc.framing(normalizedSignal,(self.rate*self.window_length),(self.rate*self.window_step))
@@ -39,13 +39,14 @@ class FeatureExtractor:
 
 			return numpy.array(final_feature_vectors)
 		return append_delta(self.mfcc_coeff_vectors,self.delta_vectors,self.delta_delta_vectors)
-		
+
 
 		return self.mfcc_coeff_vectors
-		
+
 def main():
 	extractor = FeatureExtractor("../../audio/sample14.wav")
 	print extractor.calculate_mfcc().shape
+
 
 if __name__ == '__main__':
 	main()
