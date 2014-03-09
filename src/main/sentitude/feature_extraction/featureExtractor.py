@@ -38,10 +38,13 @@ class FeatureExtractor:
 				final_feature_vectors.append(numpy.concatenate((coeff[i],delta[i],delta_delta[i])))
 
 			return numpy.array(final_feature_vectors)
-		return append_delta(self.mfcc_coeff_vectors,self.delta_vectors,self.delta_delta_vectors)
-		
+		final_features = append_delta(self.mfcc_coeff_vectors,self.delta_vectors,self.delta_delta_vectors)
+		final_features = final_features[~numpy.isnan(final_features).any(axis = 1)]
+		final_features = final_feature[~numpy.isinf(final_features).any(axis = 1)]
+		final_features = final_feature[~numpy.isneginf(final_features).any(axis = 1)]
 
-		return self.mfcc_coeff_vectors
+		return final_features
+		
 		
 def main():
 	extractor = FeatureExtractor("../../audio/sample14.wav")
