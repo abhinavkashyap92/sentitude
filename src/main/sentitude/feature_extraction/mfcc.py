@@ -152,5 +152,25 @@ class mfcc:
 		lifter = 1 + (lifter_coeff/2) * np.sin(np.pi*n/lifter_coeff)
 		return lifter*cepstra
 
+	def delta_coefficients(self,cepstrals,thetha):
+		'''
+			* The trajectories of the MFCC coefficients are calculated
+			* This is calculated because speech has information in the dynamics
+			* The formula for calculating the delta_coefficients is dt = Cn+1 - Cn-1
+																		 -----------
+																		 	  2
+			* To calculate this duplicate the first and the last rows. Else it is not possible to calculate the delta vectors for the first and the last row																		 	  
+		'''
+		#Duplicate the first and the last rows
+		(number_rows, number_columns) = cepstrals.shape
+		delta_vectors = []
+		cepstrals = np.append(np.reshape(np.copy(cepstrals[0]),(1,number_columns)),cepstrals,axis=0)
+		cepstrals = np.concatenate((cepstrals,np.reshape(np.copy(cepstrals[number_rows]),(1,number_columns))),axis=0)
+		for i in xrange(1,cepstrals.shape[0]-1):
+			delta_vectors.append(np.subtract(cepstrals[i+thetha],cepstrals[i-thetha]) /2)
+
+		return np.array(delta_vectors)
+		
+
     
     

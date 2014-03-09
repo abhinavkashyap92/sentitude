@@ -29,14 +29,23 @@ class FeatureExtractor:
 		self.logFilterBankEnergies = self.mfcc.log_filter_bank_energies(self.feature_vectors)
 		self.mfcc_coeff_vectors = self.mfcc.lifter(self.mfcc.discrete_cosine_transforms(self.logFilterBankEnergies,self.num_cepstrals))
 		self.mfcc_coeff_vectors[:,0] = numpy.log10(self.energy)
-		return self.mfcc_coeff_vectors
+		self.delta_vectors = self.mfcc.delta_coefficients(self.mfcc_coeff_vectors,1)
+		self.delta_delta_vectors = self.mfcc.delta_coefficients(self.delta_vectors,1)
+		final_feature_vectors = []
+		def append_delta(coeff,delta,delta_delta):
+			rows = coeff.shape[0]
+			for i in xrange(0,rows):
+				final_feature_vectors.append(numpy.concatenate((coeff[i],delta[i],delta_delta[i])))
+
+			return numpy.array(final_feature_vectors)
+		return append_delta(self.mfcc_coeff_vectors,self.delta_vectors,self.delta_delta_vectors)
 		
 
-
-
+		return self.mfcc_coeff_vectors
+		
 def main():
 	extractor = FeatureExtractor("../../audio/sample14.wav")
-	print extractor.calculate_mfcc()
+	print extractor.calculate_mfcc().shape
 
 if __name__ == '__main__':
 	main()
