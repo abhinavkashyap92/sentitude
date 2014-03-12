@@ -1,10 +1,15 @@
+import sys
+import os
+
 from pybrain.datasets.supervised import SupervisedDataSet
 from pybrain.supervised.trainers.backprop import BackpropTrainer
 from pybrain.tools.shortcuts import buildNetwork
 from pybrain.structure.modules import SoftmaxLayer
 from pybrain.tests.helpers import gradientCheck
 
-from featureExtractor import FeatureExtractor
+sys.path.append(os.path.join(os.path.dirname(__file__), '../'))
+
+from feature_extraction.featureExtractor import FeatureExtractor
 from learning_util import max_frames_audio, preprocess_input_vectors
 
 def main():
