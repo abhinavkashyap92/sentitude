@@ -46,16 +46,13 @@ class FeatureExtractor:
 		return final_features
 		
 def main():
-<<<<<<< HEAD
 	extractor = FeatureExtractor("../../audio/voice.wav")
 	print extractor.calculate_mfcc().shape
 	for everyRow in extractor.calculate_mfcc():
 		print everyRow
 
-=======
 	extractor = FeatureExtractor("../../audio/2.wav")
 	print extractor.calculate_mfcc().shape
 	
->>>>>>> ecb4e1d3bf062d3d29c8d5a583df9e2ee72793e6
 if __name__ == '__main__':
 	main()
