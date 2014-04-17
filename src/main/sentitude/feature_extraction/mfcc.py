@@ -96,16 +96,16 @@ class mfcc:
 		'''
 			* This is the utility function that converts the hertz to mels scale
 		'''
-		return 2595 * np.log10(1 + hertz/ 700.0)
+		return 1127.01048 * np.log10(1 + hertz/ 700.0)
 
 	def mel_scale_to_hertz(self,mel):
 		'''
 			* This is the utility function that converts mels to hertz
 		'''
 
-		return 700.00 * ( 10 ** (mel/ 2595.0) - 1)
+		return 700.00 * ( 10 ** (mel/ 1127.01048.0) - 1)
 
-	def calculate_mel_filter_banks(self,num_filters = 20, nfft = 512, sample_rate = 16000, lower_frequency = 300, higher_frequency = 3400):
+	def calculate_mel_filter_banks(self,num_filters = 20, nfft = 512, sample_rate = 16000, lower_frequency = 133.33, higher_frequency = 6855.4976):
 		'''
 			* This calculates the mel filter banks
 			* These are triangular overlapping windows
