@@ -18,7 +18,7 @@ class mfcc:
 	 		* Increases the energy of the signal at higher frequencies
 	 		* Formula for doing this is y[n] = x[n] - coeff * x[n-1]
 	 	'''
-		return np.array(lfilter([1,-coefficient],1,signal)).flatten()
+		return np.append(signal[0],signal[1:]-coefficient*signal[:-1])
 
 	def normalisation(self,signal):
 		'''
@@ -96,16 +96,16 @@ class mfcc:
 		'''
 			* This is the utility function that converts the hertz to mels scale
 		'''
-		return 1127.01048 * np.log10(1 + hertz/ 700.0)
+		return 2595 * np.log10(1 + hertz/ 700.0)
 
 	def mel_scale_to_hertz(self,mel):
 		'''
 			* This is the utility function that converts mels to hertz
 		'''
 
-		return 700.00 * ( 10 ** (mel/ 1127.01048.0) - 1)
+		return 700.00 * ( 10 ** (mel/ 2595.0) - 1)
 
-	def calculate_mel_filter_banks(self,num_filters = 20, nfft = 512, sample_rate = 16000, lower_frequency = 133.33, higher_frequency = 6855.4976):
+	def calculate_mel_filter_banks(self,num_filters = 20, nfft = 512, sample_rate = 16000, lower_frequency = 300, higher_frequency = 3400):
 		'''
 			* This calculates the mel filter banks
 			* These are triangular overlapping windows
