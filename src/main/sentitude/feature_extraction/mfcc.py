@@ -3,6 +3,7 @@ import scipy.io.wavfile
 import math
 from scipy import signal
 from scipy.fftpack import dct
+from scipy.signal import lfilter
 class mfcc:
 	'''
 		Mel Frequency cepstral coefficients
@@ -11,13 +12,13 @@ class mfcc:
 	def __init__(self):
 		pass
 
-	def pre_emphasis(self,signal,coefficient = 0.95):
+	def pre_emphasis(self,signal,coefficient=0.95):
 		'''
-			* Passing the signal through a filter to emphasize higher frequncies of the signal
-			* Increases the energy of the signal at higher frequencies
-			* Formula for doing this is y[n] = x[n] - coeff * x[n-1]
-		'''
-		return np.append(signal[0],signal[1:]-coefficient*signal[:-1])
+	 		* Passing the signal through a filter to emphasize higher frequncies of the signal
+	 		* Increases the energy of the signal at higher frequencies
+	 		* Formula for doing this is y[n] = x[n] - coeff * x[n-1]
+	 	'''
+		return np.array(lfilter([1,-coefficient],1,signal)).flatten()
 
 	def normalisation(self,signal):
 		'''
@@ -46,7 +47,7 @@ class mfcc:
 
 		padding_length = (number_of_frames-1)*frame_step + frame_length;
 		number_of_zeroes_padded = padding_length - signal_length
-		zero_array = np.zeros(number_of_zeroes_padded)
+		zero_array = np.zeros((number_of_zeroes_padded,))
 		padded_signal = np.concatenate((signal,zero_array))
 
 		# indices for framing
