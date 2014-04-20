@@ -2,10 +2,9 @@ import numpy as np
 from test import get_test_data
 from gmm_utils import mean
 from gmm_utils import covariance
-from scipy.stats import multivariate_normal
 
 
-class MultiVariateGaussain():
+class MultiVariateGaussian():
 	'''
 		This represents the Multivariate Gaussian Distribution or the multivariate Normal Distribution
 		The probability density function of Multivariate Normal distribution is given as 
@@ -65,7 +64,8 @@ if __name__ == '__main__':
 	data = get_test_data()
 	mean = mean(data)
 	covariance = covariance(data)
-	gmm_cluster = MultiVariateGaussain(mean, covariance,2);
+	print "covariance_matrix",covariance
+	gmm_cluster = MultiVariateGaussian(mean, covariance,2);
 	print gmm_cluster.probabilityDensityFunction(np.matrix([3.0,4.0]))
 
 

@@ -12,7 +12,7 @@ class mfcc:
 	def __init__(self):
 		pass
 
-	def pre_emphasis(self,signal,coefficient=0.95):
+	def pre_emphasis(self,signal,coefficient=0.97):
 		'''
 	 		* Passing the signal through a filter to emphasize higher frequncies of the signal
 	 		* Increases the energy of the signal at higher frequencies
@@ -40,7 +40,7 @@ class mfcc:
 		frame_length = round(frame_length)
 		frame_step = round(frame_step)
 
-		if signal_length < frame_length:
+		if signal_length <= frame_length:
 			number_of_frames = 1
 		else:
 			number_of_frames = 1 + math.ceil((1*signal_length - frame_length)/frame_step)
@@ -80,7 +80,7 @@ class mfcc:
 			* power spectrum of a signal is defined as |F'( log(|F(f(t))|^2) ) |^2
 			* This is useful for human voice analysis
 		'''
-		return 1.0/nfft * np.square(self.fast_fourier_transforms(frames,nfft))
+		return (1.0/nfft) * np.square(self.fast_fourier_transforms(frames,nfft))
 
 	def log_power_spectrum(self,frames,nfft,normalisation = 1):
 
@@ -96,7 +96,7 @@ class mfcc:
 		'''
 			* This is the utility function that converts the hertz to mels scale
 		'''
-		return 2595 * np.log10(1 + hertz/ 700.0)
+		return 2595.0 * np.log10(1 + hertz/ 700.0)
 
 	def mel_scale_to_hertz(self,mel):
 		'''
@@ -105,7 +105,7 @@ class mfcc:
 
 		return 700.00 * ( 10 ** (mel/ 2595.0) - 1)
 
-	def calculate_mel_filter_banks(self,num_filters = 20, nfft = 512, sample_rate = 16000, lower_frequency = 300, higher_frequency = 3400):
+	def calculate_mel_filter_banks(self,num_filters = 20, nfft = 512, sample_rate = 16000, lower_frequency = 133.33, higher_frequency = None):
 		'''
 			* This calculates the mel filter banks
 			* These are triangular overlapping windows
@@ -118,7 +118,7 @@ class mfcc:
 		lower_frequency_in_mel = self.hertz_to_mel_scale(lower_frequency)
 		higher_frequency_in_mel = self.hertz_to_mel_scale(higher_frequency)
 		mel_scale_points = np.linspace(lower_frequency_in_mel,higher_frequency_in_mel,num_filters+2)
-		hertz_values = self.mel_scale_to_hertz(mel_scale_points)
+		hertz_values = self.mel_scale_to_hertz(mel_scale_points,dtype=np.float32)
 
 		bin_numbers = np.floor((nfft+1)*hertz_values/sample_rate)
 		filter_bank = np.zeros([num_filters,nfft/2+1])
