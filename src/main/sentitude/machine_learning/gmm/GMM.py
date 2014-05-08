@@ -1,10 +1,10 @@
 from Pycluster import kcluster as knn
-from test import get_test_data
+import test
 from gmm_utils import mean
 from gmm_utils import covariance
 from multivar_gmm import MultiVariateGaussian
 import numpy as np
-
+import sys
 
 class GMM():
     """
@@ -22,7 +22,7 @@ class GMM():
 
 	"""
 
-    def __init__(self, data, number_of_gaussians,thres):
+    def __init__(self, data, number_of_gaussians):
         '''
 			data: a nd array
 			number_of_gaussians: number
@@ -32,8 +32,11 @@ class GMM():
         self.number_of_gaussians = number_of_gaussians
         self.data = data
         self.gaussians = []
-        self.initialisation()  
-        self.likelihood()   
+        self.initialisation()
+        self.mstep(self.estep())
+
+    def getGaussians(self):
+        return self.gaussians        
         
     def initialisation(self):
         '''
@@ -58,7 +61,7 @@ class GMM():
         	weight = float(len(everyMatrix))/total_weight
         	self.gaussians.append({'gaussian':gaussian,'weight':weight})
         
-    def estep(self):
+    def estep(self,data=None):
         '''
 			In the expectation step of the EM algorithm find the probability p(i,k) 
 			The probability of the sample i belonging to the cluster k using the available mixture parameter estimates
@@ -69,8 +72,13 @@ class GMM():
 			
 			see the formula on open cv page http://docs.opencv.org/modules/ml/doc/expectation_maximization.html
         '''
+        if data == None:
+            data = self.data
+        else:
+            data = data
+
         number_clusters = self.number_of_gaussians
-        size = len(self.data)
+        size = len(data)
 
         #constructing a two d array where every row(i) i from 1 to n is for one vector 
         #and column contains the value of the probability of that vector belonging to that cluster k = 1 to m
@@ -79,7 +87,7 @@ class GMM():
         for i in xrange(size):
         	for k in xrange(number_clusters):
         		pi_k = self.gaussians[k]["weight"]
-        		pdf_k = self.gaussians[k]["gaussian"].probabilityDensityFunction(self.data[i])
+        		pdf_k = self.gaussians[k]["gaussian"].probabilityDensityFunction(np.asmatrix(data[i]))
         		alpha_array[i][k] = pi_k * pdf_k
 
         	alpha_array[i] = alpha_array[i]/np.sum(alpha_array[i])
@@ -119,54 +127,65 @@ class GMM():
     		return sum([k_alpha_array[i] * self.data[i] for i in xrange(size)])
 
     	def calculating_numerator_for_s_k(cluster_number):
-    		alpha_array_transpose = alpha_array.T
-    		k_alpha_array = alpha_array_transpose[cluster_number]
-    		return sum([k_alpha_array[i] * np.multiply((self.data[i]-self.gaussians[cluster_number]["gaussian"].getMeanVector()),(self.data[i]-self.gaussians[cluster_number]["gaussian"].getMeanVector()).T) for i in xrange(size)])
+        	alpha_array_transpose = alpha_array.T
+        	k_alpha_array = alpha_array_transpose[cluster_number]
+        	return sum([k_alpha_array[i] * np.multiply((self.data[i]-self.gaussians[cluster_number]["gaussian"].getMeanVector()),(self.data[i]-self.gaussians[cluster_number]["gaussian"].getMeanVector()).T) for i in xrange(size)])
+                
+            
     		
    		
     	for k in xrange(self.number_of_gaussians):
-	    	alpha_i_k_summation = summation_alpha_i_k(k)
-	    	pi_k = alpha_i_k_summation / size	    	
-	    	a_k  = summation_alpha_i_k_into_x_i(k)/float(alpha_i_k_summation)
-	    	s_k = np.diag(calculating_numerator_for_s_k(k))/alpha_i_k_summation
-	    	#update the parameters of the corresponding gaussian
-	    	self.gaussians[k]["weight"] = pi_k
-	    	self.gaussians[k]["gaussian"].setMeanVector(a_k)
-	    	self.gaussians[k]["gaussian"].setCovarianceMatrix(s_k)
+    	    	alpha_i_k_summation = summation_alpha_i_k(k)
+    	    	pi_k = alpha_i_k_summation / size	    	
+    	    	a_k  = np.asmatrix(summation_alpha_i_k_into_x_i(k)/float(alpha_i_k_summation))
+    	    	s_k = np.asmatrix(np.diag(np.diagonal(calculating_numerator_for_s_k(k)))/float(alpha_i_k_summation))
+    	    	#update the parameters of the corresponding gaussian  
+    	    	self.gaussians[k]["weight"] = pi_k
+    	    	self.gaussians[k]["gaussian"].setMeanVector(a_k)
+    	    	self.gaussians[k]["gaussian"].setCovarianceMatrix(s_k)
+                self.gaussians[k]["gaussian"].setPrecisionMatrix()
+                self.gaussians[k]["gaussian"].setGeneralisedSampleVariance()
 
 		
-    def likelihood(self):
+    def likelihood(self,data):
     	'''
     		The definition of a likelihood function is given at http://en.wikipedia.org/wiki/Likelihood_function#Continuous_probability_distribution
     		The likelihood of the gaussian mixture model is given in http://docs.opencv.org/modules/ml/doc/expectation_maximization.html
 
     	'''
-    	size = len(self.data)   
+    	size = len(data)   
     	#Dont worry this line came after a lot of refractoring
     	#I agree its nowhere readable
-    	return sum([np.log(sum([self.gaussians[k]["weight"] * self.gaussians[k]["gaussian"].probabilityDensityFunction(self.data[i]) for k in xrange(self.number_of_gaussians)])) for i in xrange(size)])
+    	return sum([np.log(sum([self.gaussians[k]["weight"] * self.gaussians[k]["gaussian"].probabilityDensityFunction(np.asmatrix(self.data[i])) for k in xrange(self.number_of_gaussians)])) for i in xrange(size)])
 
-
-
-    def expectation_maximisation(self,niter=20):
+    def train(self,niter=20):
     	'''
 			The expectation maximisation algorithm tries to maximise the maximum likelihood function of the mixture of gaussians iteratively
 			Look at http://parkcu.com/blog/wp-content/uploads/2013/07/Bradley-Fayyad-Reina-1998-Scaling-EM-Expectation-Maximization-Clustering-to-Large-Databases.pdf to know  how it works			
     	'''
     	likelihoods = list()
-    	for i in xrange(niter):
+    	for i in xrange(niter):            
     		alpha_array = self.estep()
     		self.mstep(alpha_array)
-    		likelihoods.append(self.likelihood())
-    		if len(likelihoods) >=2 and (abs(likelihoods[-1] - likelihoods[-2]) < abs(1e-4)):
-    			print "breaking"
-    			break
+    		likelihoods.append(self.likelihood(self.data))                   
+    		if len(likelihoods) >=2 and (abs(likelihoods[-1] - likelihoods[-2]) < abs(1e-5)):
+    			print "breaking at iteration i: ", i                
+    			break        
 
+    def predict(self,data):
+    	'''
+    		This method predicts the data label to which the sample belongs. 
+    		On how to do this is got from the paper http://www.eecs.tufts.edu/~mcao01/2010f/COMP-135.pdf
+    	'''
+    	alpha_matrix = self.estep(data=data)
+        res = alpha_matrix.argmax(axis = 1)
+        unique_vals, indices = np.unique(res, return_inverse=True)
+        return unique_vals[ np.argmax( np.bincount( indices))]
 
-
-
+        
 
 if __name__ == '__main__':
-    data = get_test_data()
+    data = test.get_test_data()
     gmm = GMM(data, 2)
+    
     

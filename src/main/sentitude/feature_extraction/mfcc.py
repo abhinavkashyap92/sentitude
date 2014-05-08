@@ -118,7 +118,7 @@ class mfcc:
 		lower_frequency_in_mel = self.hertz_to_mel_scale(lower_frequency)
 		higher_frequency_in_mel = self.hertz_to_mel_scale(higher_frequency)
 		mel_scale_points = np.linspace(lower_frequency_in_mel,higher_frequency_in_mel,num_filters+2)
-		hertz_values = self.mel_scale_to_hertz(mel_scale_points,dtype=np.float32)
+		hertz_values = self.mel_scale_to_hertz(mel_scale_points)
 
 		bin_numbers = np.floor((nfft+1)*hertz_values/sample_rate)
 		filter_bank = np.zeros([num_filters,nfft/2+1])

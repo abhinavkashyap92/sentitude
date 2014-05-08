@@ -1,5 +1,5 @@
 import numpy as np
-from test import get_test_data
+import test
 from gmm_utils import mean
 from gmm_utils import covariance
 
@@ -45,14 +45,17 @@ class MultiVariateGaussian():
 	def setCovarianceMatrix(self,covariance_matrix):
 		self.covariance_matrix = covariance_matrix
 
-	def get_generalisedSampleVariance(self):
+	def getGeneralisedSampleVariance(self):
 		return self.generalisedSampleVariance;
+
+	def setGeneralisedSampleVariance(self):
+		self.generalisedSampleVariance = np.linalg.det(self.getCovarianceMatrix()) 
 
 	def getPrecisionMatrix(self):
 		return self.precision_matrix;
 
-	def setPrecisionMatrix(self,precision_matrix):
-		self.precision_matrix = precision_matrix
+	def setPrecisionMatrix(self):
+		self.precision_matrix = np.fabs(np.linalg.inv(self.getCovarianceMatrix()))
 
 	def probabilityDensityFunction(self,data):
 		variation_from_mean = data - self.mean_vector
@@ -61,7 +64,7 @@ class MultiVariateGaussian():
 		return (np.exp((self.MahalanobisDistance * (-0.5) )) / self.denominator).item(0)
 
 if __name__ == '__main__':
-	data = get_test_data()
+	data = test.get_test_data()
 	mean = mean(data)
 	covariance = covariance(data)
 	print "covariance_matrix",covariance
