@@ -38,3 +38,10 @@ nosetests.xml
 
 # Ignore the dataset
 src/main/Dataset/
+
+# ignore *.wav or *.mp3 files
+*.wav
+*.mp3
+
+# ignore training data
+src/main/sentitude/machine_learning/ann/training_data/
