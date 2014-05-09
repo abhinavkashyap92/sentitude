@@ -5,7 +5,7 @@ from collections import Counter
 import operator
 import numpy as np
 
-sys.path.append(os.path.join(os.path.dirname(__file__), '../'))
+sys.path.append(os.path.join(os.path.dirname(__file__), '../../'))
 from pyfann import libfann
 from feature_extraction.featureExtractor import FeatureExtractor
 from learning_util import get_min_frames_audio, preprocess_input_vectors
@@ -13,12 +13,12 @@ from learning_util import get_min_frames_audio, preprocess_input_vectors
 def main():
     mfcc_coeff_vectors_dict = {}
     for i in range(1, 201):
-        extractor = FeatureExtractor('/home/venkatesh/Venki/FINAL_SEM/Project/Datasets/Happiness/HappinessAudios/' + str(i) + '.wav')
+        extractor = FeatureExtractor('../../../Dataset/Happiness/HappinessAudios/' + str(i) + '.wav')
         mfcc_coeff_vectors = extractor.calculate_mfcc()
         mfcc_coeff_vectors_dict.update({str(i) :(mfcc_coeff_vectors, mfcc_coeff_vectors.shape[0])})
 
     for i in range(201, 401):
-        extractor = FeatureExtractor('/home/venkatesh/Venki/FINAL_SEM/Project/Datasets/Sadness/SadnessAudios/' + str(i - 200) + '.wav')
+        extractor = FeatureExtractor('../../../Dataset/Sadness/SadnessAudios/' + str(i - 200) + '.wav')
         mfcc_coeff_vectors = extractor.calculate_mfcc()
         mfcc_coeff_vectors_dict.update({str(i) :(mfcc_coeff_vectors, mfcc_coeff_vectors.shape[0])})
 
