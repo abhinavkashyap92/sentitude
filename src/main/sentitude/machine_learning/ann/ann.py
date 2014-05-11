@@ -41,7 +41,7 @@ class Ann:
         """
             method which trains the neural network
         """
-        print "Training network..."
+        print "-> Training network..."
         ann = libfann.neural_net()
         ann.create_sparse_array(
             self._connection_rate, (self._num_input, self._num_hidden, self._num_output))
@@ -49,15 +49,15 @@ class Ann:
         ann.set_activation_function_output(libfann.SIGMOID_SYMMETRIC_STEPWISE)
         ann.train_on_file("training_data/fann/training_data.data",
                           self._max_iterations, self._iterations_between_reports, self._desired_error)
-        print "Training complete..."
-        print "Saving network...."
+        print "-> Training complete..."
+        print "-> Saving network...."
         ann.save("network_states/fann/fann.net")
 
     def _get_mfcc_of_training_set(self):
         """
             Reads the mffc feature vectors of the audio
         """
-        print "Calculating mfcc feature vectors..."
+        print "   -> Calculating mfcc feature vectors..."
         mfcc_coeff_vectors_dict = {}
         for i in range(1, 151):
             extractor = FeatureExtractor(
@@ -70,14 +70,14 @@ class Ann:
                 DATASET_PATH + 'Sadness/SadnessAudios/' + str(i - 200) + '.wav')
             mfcc_coeff_vectors = extractor.calculate_mfcc()
             mfcc_coeff_vectors_dict.update({str(i): mfcc_coeff_vectors})
-        print "mfcc feature vectors found...."
+        print "   -> mfcc feature vectors found...."
         return mfcc_coeff_vectors_dict
 
     def _create_train_data(self):
         """
             creates new dataset if its for new network
         """
-        print "Generating training dataset..."
+        print "-> Generating training dataset..."
         mfcc_coeff = self._get_mfcc_of_training_set()
         train_data_file = open("training_data/fann/training_data.data", "w")
         train_data_file.writelines("194226 " + str(36) + " 1\n")
@@ -98,7 +98,7 @@ class Ann:
             train_data_file.writelines("0")
 
         train_data_file.close()
-        print "Training data set file generated..."
+        print "-> Training data set file generated..."
 
     def get_emotion(self, file_path):
         """

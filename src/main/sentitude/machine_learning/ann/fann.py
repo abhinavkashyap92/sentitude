@@ -74,7 +74,7 @@ def main():
         'happiness': 0,
         'sadness': 0
     }
-    for i in range(151, 201):
+    for i in range(1, 151):
         mfcc_coeff_vectors = processed_mfcc_coeff[str(i)]
         frame_level_values = []
         for each_vector in mfcc_coeff_vectors:
@@ -98,7 +98,7 @@ def main():
         'sadness': 0
     }
 
-    for i in range(351, 401):
+    for i in range(201, 351):
         mfcc_coeff_vectors = processed_mfcc_coeff[str(i)]
         frame_level_values = []
         for each_vector in mfcc_coeff_vectors:
