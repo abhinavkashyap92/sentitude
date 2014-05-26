@@ -1,0 +1,5 @@
+Run the commands:
+
+1. cd FANN-2.2.0-Source 
+2. cmake .
+3. sudo make install
